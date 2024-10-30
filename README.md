@@ -1,53 +1,52 @@
 # Technical instructions
 
 ## Create and activate Python virtual environment
-```bash
+bash
     python -m venv venv
     .\venv\Scripts\Activate
-```
+
 ## Activar permisos para inicia el entorno, solo sino lo 
 ´´´bash
     Set-ExecutionPolicy RemoteSigned
     Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ´´´
 ## Install dependencies
-Create file *requirements.txt*
+Create file requirements.txt
 
-```bash
+bash
     pip install -r requirements.txt
-```
+
 
 ## Run FastAPI
 
-```bash
+bash
     FastAPI uvicorn app.main:app --reload
  
-```
+
 
 ## Run streamlit project
 
-```bash
+bash
     streamlit run app.py 
-```
+
 
 # Utilities
 ## Steps to remove virtual environment
-```bash
+bash
     deactivate
     rm -rf venv
-```
+
 
 ## Steps to remove files uploaded to github with gitignore
-```bash
+bash
     git rm --cached -r .
-```
+
 
 ## Steps to create a new branch 
-```bash
+bash
     git checkout -b feature/"name of the branch"
-```
+
 
 ## Steps to fetch changes from main branch
-```bash
+bash
     git fetch    
-```
