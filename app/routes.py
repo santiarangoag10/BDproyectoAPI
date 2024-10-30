@@ -370,3 +370,332 @@ def crear_facturas_bulk(facturas: List[FacturacionCreate]):
     finally:
         cursor.close()
         conn.close()
+
+# query
+
+@router.get("/query1/", tags=["Query1 getproducts"])
+def getproducts():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM Productos")
+        productos = cursor.fetchall()
+        return [Producto(**producto) for producto in productos]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.get("/query2/", tags=["query2 productos por proveedor"])
+def productos_por_proveedor():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            p.nombre as proveedor,
+            COUNT(pr.producto_id) as total_productos,
+            AVG(pr.precio) as precio_promedio
+        FROM Proveedores p
+        LEFT JOIN Productos pr ON p.proveedor_id = pr.proveedor_id
+        GROUP BY p.proveedor_id, p.nombre
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.get("/query3/", tags=["query3 empleados por sede y facturas"])
+def empleados_sede_facturas():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            s.nombre as sede,
+            COUNT(DISTINCT e.empleado_id) as total_empleados,
+            COUNT(f.factura_id) as total_facturas
+        FROM Sedes s
+        LEFT JOIN Empleados e ON s.sede_id = e.sede_id
+        LEFT JOIN Facturacion f ON e.empleado_id = f.empleado_id
+        GROUP BY s.sede_id, s.nombre
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.get("/query4/", tags=["query4 cliente mayor facturacion"])
+def cliente_mayor_facturacion():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            c.nombre,
+            COUNT(f.factura_id) as total_facturas,
+            SUM(f.total) as total_facturado
+        FROM Clientes c
+        INNER JOIN Facturacion f ON c.cliente_id = f.cliente_id
+        GROUP BY c.cliente_id, c.nombre
+        ORDER BY total_facturado DESC
+        LIMIT 1
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()    
+
+@router.get("/query5/", tags=["query5 productos sin proveedor"])
+def productos_sin_proveedor():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT p.*
+        FROM Productos p
+        LEFT JOIN Proveedores pr ON p.proveedor_id = pr.proveedor_id
+        WHERE p.proveedor_id IS NULL
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.get("/query6/", tags=["query6 empleados top ventas"])
+def empleados_top_ventas():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            s.nombre as sede,
+            e.nombre as empleado,
+            COUNT(f.factura_id) as total_ventas,
+            SUM(f.total) as total_facturado
+        FROM Sedes s
+        INNER JOIN Empleados e ON s.sede_id = e.sede_id
+        INNER JOIN Facturacion f ON e.empleado_id = f.empleado_id
+        GROUP BY s.sede_id, s.nombre, e.empleado_id, e.nombre
+        ORDER BY total_facturado DESC
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()  
+
+
+@router.get("/query7/", tags=["query7 proveedor producto mas caro"])
+def proveedor_producto_mas_caro():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            p.nombre as proveedor,
+            pr.nombre as producto,
+            pr.precio as precio_maximo
+        FROM Proveedores p
+        RIGHT JOIN Productos pr ON p.proveedor_id = pr.proveedor_id
+        WHERE pr.precio = (
+            SELECT MAX(precio)
+            FROM Productos
+            WHERE proveedor_id = p.proveedor_id
+        )
+        ORDER BY pr.precio DESC
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/query8/", tags=["query8 productos stock critico"])
+def productos_stock_critico():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            p.*,
+            pr.nombre as proveedor
+        FROM Productos p
+        LEFT JOIN Proveedores pr ON p.proveedor_id = pr.proveedor_id
+        WHERE p.stock < 10
+        ORDER BY p.stock ASC
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/query9/", tags=["query9 rendimiento empleados sede"])
+def rendimiento_empleados_sede():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            s.nombre as sede,
+            e.nombre as empleado,
+            COUNT(f.factura_id) as total_ventas,
+            AVG(f.total) as promedio_venta
+        FROM Sedes s
+        INNER JOIN Empleados e ON s.sede_id = e.sede_id
+        LEFT JOIN Facturacion f ON e.empleado_id = f.empleado_id
+        GROUP BY s.sede_id, s.nombre, e.empleado_id, e.nombre
+        ORDER BY total_ventas DESC
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/query10/", tags=["query10 facturacion por sede"])
+def facturacion_por_sede():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            s.nombre as sede,
+            COUNT(f.factura_id) as total_facturas,
+            SUM(f.total) as total_facturado,
+            AVG(f.total) as promedio_factura
+        FROM Sedes s
+        INNER JOIN Empleados e ON s.sede_id = e.sede_id
+        INNER JOIN Facturacion f ON e.empleado_id = f.empleado_id
+        GROUP BY s.sede_id, s.nombre
+        ORDER BY total_facturado DESC
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.get("/query11/", tags=["query11 productos por rango de precio"])
+def productos_por_rango_precio():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            pr.nombre as proveedor,
+            COUNT(CASE WHEN p.precio < 100 THEN 1 END) as productos_bajo_precio,
+            COUNT(CASE WHEN p.precio >= 100 AND p.precio < 500 THEN 1 END) as productos_precio_medio,
+            COUNT(CASE WHEN p.precio >= 500 THEN 1 END) as productos_precio_alto
+        FROM Proveedores pr
+        LEFT JOIN Productos p ON pr.proveedor_id = p.proveedor_id
+        GROUP BY pr.proveedor_id, pr.nombre
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()        
+
+@router.get("/query12/", tags=["query12 clientes frecuentes"])
+def clientes_frecuentes():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            c.nombre,
+            c.email,
+            COUNT(f.factura_id) as total_compras,
+            SUM(f.total) as total_gastado,
+            AVG(f.total) as promedio_compra,
+            MAX(f.fecha_factura) as ultima_compra
+        FROM Clientes c
+        INNER JOIN Facturacion f ON c.cliente_id = f.cliente_id
+        GROUP BY c.cliente_id, c.nombre, c.email
+        HAVING COUNT(f.factura_id) >= 3
+        ORDER BY total_compras DESC
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/query13/", tags=["query13 empleados sin ventas"])
+def empleados_sin_ventas():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            s.nombre as sede,
+            e.nombre as empleado,
+            COUNT(f.factura_id) as total_ventas,
+            AVG(f.total) as promedio_venta
+        FROM Sedes s
+        INNER JOIN Empleados e ON s.sede_id = e.sede_id
+        LEFT JOIN Facturacion f ON e.empleado_id = f.empleado_id
+        GROUP BY s.sede_id, s.nombre, e.empleado_id, e.nombre
+        ORDER BY total_ventas DESC
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/query14/", tags=["query14 clientes sin compras"])
+def clientes_sin_compras():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT c.*
+        FROM Clientes c
+        LEFT JOIN Facturacion f ON c.cliente_id = f.cliente_id
+        WHERE f.factura_id IS NULL
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/query15/", tags=["query15 top productos"])
+def top_productos():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        SELECT 
+            p.nombre,
+            p.precio,
+            COUNT(f.factura_id) as veces_vendido,
+            SUM(f.total) as total_generado
+        FROM Productos p
+        INNER JOIN Facturacion f ON p.producto_id = f.factura_id
+        GROUP BY p.producto_id, p.nombre, p.precio
+        ORDER BY veces_vendido DESC
+        LIMIT 5
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+        
+
+
