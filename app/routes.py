@@ -7,7 +7,6 @@ from typing import List
 
 router = APIRouter()
 
-# Endpoints para Sedes
 @router.post("/sedes/", response_model=Sede, tags=["Sedes"])
 def crear_sede(sede: SedeCreate):
     conn = get_db_connection()
@@ -66,7 +65,6 @@ def crear_sedes_bulk(sedes: List[SedeCreate]):
         cursor.close()
         conn.close()
 
-# Endpoints para Clientes
 @router.post("/clientes/", response_model=Cliente, tags=["Clientes"])
 def crear_cliente(cliente: ClienteCreate):
     conn = get_db_connection()
@@ -127,7 +125,6 @@ def crear_clientes_bulk(clientes: List[ClienteCreate]):
         cursor.close()
         conn.close()
 
-# Endpoints para Empleados
 @router.post("/empleados/", response_model=Empleado, tags=["Empleados"])
 def crear_empleado(empleado: EmpleadoCreate):
     conn = get_db_connection()
@@ -188,7 +185,6 @@ def crear_empleados_bulk(empleados: List[EmpleadoCreate]):
         cursor.close()
         conn.close()
 
-# Endpoints para Proveedores
 @router.post("/proveedores/", response_model=Proveedor, tags=["Proveedores"])
 def crear_proveedor(proveedor: ProveedorCreate):
     conn = get_db_connection()
@@ -249,7 +245,6 @@ def crear_proveedores_bulk(proveedores: List[ProveedorCreate]):
         cursor.close()
         conn.close()
 
-# Endpoints para Productos
 @router.post("/productos/", response_model=Producto, tags=["Productos"])
 def crear_producto(producto: ProductoCreate):
     conn = get_db_connection()
@@ -310,7 +305,6 @@ def crear_productos_bulk(productos: List[ProductoCreate]):
         cursor.close()
         conn.close()
 
-# Endpoints para Facturación
 @router.post("/facturacion/", response_model=Facturacion, tags=["Facturacion"])
 def crear_factura(factura: FacturacionCreate):
     conn = get_db_connection()
@@ -371,9 +365,8 @@ def crear_facturas_bulk(facturas: List[FacturacionCreate]):
         cursor.close()
         conn.close()
 
-# query
 
-@router.get("/query1/", tags=["Query1 getproducts"])
+@router.get("/query1/", tags=["Query1 productos"])
 def getproducts():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -387,7 +380,7 @@ def getproducts():
         cursor.close()
         conn.close()
 
-@router.get("/query2/", tags=["query2 productos por proveedor"])
+@router.get("/query2/", tags=["Query2 productos por proveedor"])
 def productos_por_proveedor():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -407,7 +400,7 @@ def productos_por_proveedor():
         cursor.close()
         conn.close()
 
-@router.get("/query3/", tags=["query3 empleados por sede y facturas"])
+@router.get("/query3/", tags=["Query3 empleados por sede y facturas"])
 def empleados_sede_facturas():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -428,7 +421,7 @@ def empleados_sede_facturas():
         cursor.close()
         conn.close()
 
-@router.get("/query4/", tags=["query4 cliente mayor facturacion"])
+@router.get("/query4/", tags=["Query4 cliente mayor facturacion"])
 def cliente_mayor_facturacion():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -450,7 +443,7 @@ def cliente_mayor_facturacion():
         cursor.close()
         conn.close()    
 
-@router.get("/query5/", tags=["query5 productos sin proveedor"])
+@router.get("/query5/", tags=["Query5 productos sin proveedor"])
 def productos_sin_proveedor():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -467,7 +460,7 @@ def productos_sin_proveedor():
         cursor.close()
         conn.close()
 
-@router.get("/query6/", tags=["query6 empleados top ventas"])
+@router.get("/query6/", tags=["Query6 empleados top ventas"])
 def empleados_top_ventas():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -491,7 +484,7 @@ def empleados_top_ventas():
         conn.close()  
 
 
-@router.get("/query7/", tags=["query7 proveedor producto mas caro"])
+@router.get("/query7/", tags=["Query7 proveedor producto mas caro"])
 def proveedor_producto_mas_caro():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -517,7 +510,7 @@ def proveedor_producto_mas_caro():
         conn.close()
 
 
-@router.get("/query8/", tags=["query8 productos stock critico"])
+@router.get("/query8/", tags=["Query8 productos stock critico"])
 def productos_stock_critico():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -538,7 +531,7 @@ def productos_stock_critico():
         conn.close()
 
 
-@router.get("/query9/", tags=["query9 rendimiento empleados sede"])
+@router.get("/query9/", tags=["Query9 rendimiento empleados sede"])
 def rendimiento_empleados_sede():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -562,7 +555,7 @@ def rendimiento_empleados_sede():
         conn.close()
 
 
-@router.get("/query10/", tags=["query10 facturacion por sede"])
+@router.get("/query10/", tags=["Query10 facturacion por sede"])
 def facturacion_por_sede():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -585,7 +578,7 @@ def facturacion_por_sede():
         cursor.close()
         conn.close()
 
-@router.get("/query11/", tags=["query11 productos por rango de precio"])
+@router.get("/query11/", tags=["Query11 productos por rango de precio"])
 def productos_por_rango_precio():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -606,7 +599,7 @@ def productos_por_rango_precio():
         cursor.close()
         conn.close()        
 
-@router.get("/query12/", tags=["query12 clientes frecuentes"])
+@router.get("/query12/", tags=["Query12 clientes frecuentes"])
 def clientes_frecuentes():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -632,7 +625,7 @@ def clientes_frecuentes():
         conn.close()
 
 
-@router.get("/query13/", tags=["query13 empleados sin ventas"])
+@router.get("/query13/", tags=["Query13 empleados sin ventas"])
 def empleados_sin_ventas():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -641,13 +634,13 @@ def empleados_sin_ventas():
         SELECT 
             s.nombre as sede,
             e.nombre as empleado,
-            COUNT(f.factura_id) as total_ventas,
-            AVG(f.total) as promedio_venta
-        FROM Sedes s
-        INNER JOIN Empleados e ON s.sede_id = e.sede_id
+            e.cargo,
+            e.email
+        FROM Empleados e
+        LEFT JOIN Sedes s ON e.sede_id = s.sede_id
         LEFT JOIN Facturacion f ON e.empleado_id = f.empleado_id
-        GROUP BY s.sede_id, s.nombre, e.empleado_id, e.nombre
-        ORDER BY total_ventas DESC
+        WHERE f.factura_id IS NULL
+        ORDER BY s.nombre, e.nombre
         """
         cursor.execute(query)
         return cursor.fetchall()
@@ -656,16 +649,23 @@ def empleados_sin_ventas():
         conn.close()
 
 
-@router.get("/query14/", tags=["query14 clientes sin compras"])
+@router.get("/query14/", tags=["Query14 clientes sin compras"])
 def clientes_sin_compras():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
         query = """
-        SELECT c.*
+        SELECT 
+            c.cliente_id,
+            c.nombre,
+            c.email,
+            c.telefono,
+            c.direccion,
+            c.fecha_registro
         FROM Clientes c
         LEFT JOIN Facturacion f ON c.cliente_id = f.cliente_id
         WHERE f.factura_id IS NULL
+        ORDER BY c.fecha_registro DESC
         """
         cursor.execute(query)
         return cursor.fetchall()
@@ -674,7 +674,7 @@ def clientes_sin_compras():
         conn.close()
 
 
-@router.get("/query15/", tags=["query15 top productos"])
+@router.get("/query15/", tags=["Query15 top productos"])
 def top_productos():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
